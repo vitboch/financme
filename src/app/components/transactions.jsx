@@ -1,22 +1,24 @@
 import React, { useState, useEffect } from "react";
-import PropTypes from "prop-types";
 import API from "../api";
+import _ from "lodash";
 import OperationsHistory from "./tasks/operationsHistory";
 import TransactionStatus from "./transactionStatus";
 import Pagination from "./pagination";
 import { pagination } from "../utils/pagination";
-import Transaction from "./transaction";
 import GroupList from "./groupList";
+import TransactionsTable from "./transactionsTable";
+import Loader from "./common/loader";
 
 const Transactions = () => {
     const userId = "111";
-    const [transactions, setTransactions] = useState([]);
-    const [categories, setCategories] = useState([]);
+    const [transactions, setTransactions] = useState();
+    const [categories, setCategories] = useState();
     const [selectedCategories, setSelectedCategories] = useState();
-    const [wallets, setWallets] = useState([]);
+    const [wallets, setWallets] = useState();
     const [selectedWallets, setSelectedWallets] = useState();
     const [currentPage, setCurrentPage] = useState(1);
-    const pageSize = 2;
+    const [sortBy, setSortBy] = useState({ path: "created", order: "desc" });
+    const pageSize = 8;
 
     useEffect(() => {
         API.transactions
@@ -56,110 +58,102 @@ const Transactions = () => {
     const handleWalletsSelect = (item) => {
         setSelectedWallets(item);
     };
-
-    const filteredCategories =
-        selectedCategories && selectedWallets
-            ? transactions.filter(
-                  (transaction) =>
-                      JSON.stringify(transaction.category) ===
-                          JSON.stringify(selectedCategories) &&
-                      JSON.stringify(transaction.wallet) ===
-                          JSON.stringify(selectedWallets)
-              )
-            : selectedCategories
-            ? transactions.filter(
-                  (transaction) =>
-                      JSON.stringify(transaction.category) ===
-                      JSON.stringify(selectedCategories)
-              )
-            : selectedWallets
-            ? transactions.filter(
-                  (transaction) =>
-                      JSON.stringify(transaction.wallet) ===
-                      JSON.stringify(selectedWallets)
-              )
-            : transactions;
-    const count = filteredCategories.length;
-    const transactionsCrop = pagination(
-        filteredCategories,
-        currentPage,
-        pageSize
-    );
-    const clearFilter = () => {
-        setSelectedCategories();
-        setSelectedWallets();
+    const handleSort = (item) => {
+        setSortBy(item);
     };
 
-    return (
-        <>
-            <OperationsHistory />
-            <div className="d-flex">
-                {categories && (
-                    <div className="d-flex flex-column flex-shrink-0 p-3">
-                        <GroupList
-                            items={categories}
-                            onItemSelect={handleCategoriesSelect}
-                            selectedItem={selectedCategories}
-                        />
-                    </div>
-                )}
-                {wallets && (
-                    <div className="d-flex flex-column flex-shrink-0 p-3">
-                        <GroupList
-                            items={wallets}
-                            onItemSelect={handleWalletsSelect}
-                            selectedItem={selectedWallets}
-                        />
-                        <button
-                            className="btn btn-secondary mt-2"
-                            onClick={clearFilter}
-                        >
-                            {" "}
-                            Очистить
-                        </button>{" "}
-                    </div>
-                )}
-            </div>
-            <div className="d-flex flex-column">
-                <TransactionStatus length={count} />
-                {count > 0 && (
-                    <table className="table">
-                        <thead>
-                            <tr>
-                                <th scope="col">Дата</th>
-                                <th scope="col">Название</th>
-                                <th scope="col">Тип</th>
-                                <th scope="col">Категория</th>
-                                <th scope="col">Счет</th>
-                                <th scope="col">Сумма</th>
-                                <th scope="col" />
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {transactionsCrop.map((transaction) => (
-                                <Transaction
-                                    key={transaction._id}
-                                    {...transaction}
-                                    onDelete={handleDelete}
-                                />
-                            ))}
-                        </tbody>
-                    </table>
-                )}
-                <div className="d-flex justify-content-center">
-                    <Pagination
-                        itemsCount={count}
-                        pageSize={pageSize}
-                        currentPage={currentPage}
-                        onPageChange={handlePageChange}
-                    />
+    if (transactions) {
+        const filteredTransactions =
+            selectedCategories && selectedWallets
+                ? transactions.filter(
+                      (transaction) =>
+                          JSON.stringify(transaction.category) ===
+                              JSON.stringify(selectedCategories) &&
+                          JSON.stringify(transaction.wallet) ===
+                              JSON.stringify(selectedWallets)
+                  )
+                : selectedCategories
+                ? transactions.filter(
+                      (transaction) =>
+                          JSON.stringify(transaction.category) ===
+                          JSON.stringify(selectedCategories)
+                  )
+                : selectedWallets
+                ? transactions.filter(
+                      (transaction) =>
+                          JSON.stringify(transaction.wallet) ===
+                          JSON.stringify(selectedWallets)
+                  )
+                : transactions;
+        const count = filteredTransactions.length;
+        const sortedTransactions = _.orderBy(
+            filteredTransactions,
+            [sortBy.path],
+            [sortBy.order]
+        );
+        const transactionsCrop = pagination(
+            sortedTransactions,
+            currentPage,
+            pageSize
+        );
+        const clearFilter = () => {
+            setSelectedCategories();
+            setSelectedWallets();
+        };
+
+        return (
+            <>
+                <OperationsHistory />
+                <div className="d-flex">
+                    {categories && (
+                        <div className="d-flex flex-column flex-shrink-0 p-3">
+                            <GroupList
+                                items={categories}
+                                onItemSelect={handleCategoriesSelect}
+                                selectedItem={selectedCategories}
+                            />
+                        </div>
+                    )}
+                    {wallets && (
+                        <div className="d-flex flex-column flex-shrink-0 p-3">
+                            <GroupList
+                                items={wallets}
+                                onItemSelect={handleWalletsSelect}
+                                selectedItem={selectedWallets}
+                            />
+                            <button
+                                className="btn btn-secondary mt-2"
+                                onClick={clearFilter}
+                            >
+                                {" "}
+                                Очистить
+                            </button>{" "}
+                        </div>
+                    )}
                 </div>
-            </div>
-        </>
-    );
-};
-Transaction.propTypes = {
-    transactions: PropTypes.array
+                <div className="d-flex flex-column">
+                    <TransactionStatus length={count} />
+                    {count > 0 && (
+                        <TransactionsTable
+                            transactions={transactionsCrop}
+                            onSort={handleSort}
+                            selectedSort={sortBy}
+                            onDelete={handleDelete}
+                        />
+                    )}
+                    <div className="d-flex justify-content-center">
+                        <Pagination
+                            itemsCount={count}
+                            pageSize={pageSize}
+                            currentPage={currentPage}
+                            onPageChange={handlePageChange}
+                        />
+                    </div>
+                </div>
+            </>
+        );
+    }
+    return <Loader />;
 };
 
 export default Transactions;
