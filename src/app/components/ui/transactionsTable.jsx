@@ -1,11 +1,12 @@
 import React from "react";
 import PropTypes from "prop-types";
-import TableHeader from "./common/table/tableHeader";
-import TableBody from "./common/table/tableBody";
-import Table from "./common/table/table";
-import { displayDate } from "../utils/displayDate";
-import TypeTransaction from "./typeTransaction";
-import AccountType from "./accountType";
+import TableHeader from "../common/table/tableHeader";
+import TableBody from "../common/table/tableBody";
+import Table from "../common/table/table";
+import { displayDate } from "../../utils/displayDate";
+import TypeTransaction from "../common/typeTransaction";
+import AccountType from "../common/accountType";
+import { Link } from "react-router-dom";
 
 const TransactionsTable = ({
     transactions,
@@ -19,7 +20,6 @@ const TransactionsTable = ({
             name: "Дата",
             component: (transaction) => <>{displayDate(transaction.created)}</>
         },
-        name: { path: "name", name: "Название" },
         expenses: {
             path: "expenses",
             name: "Тип",
@@ -39,13 +39,23 @@ const TransactionsTable = ({
             )
         },
         amount: { path: "amount", name: "Сумма" },
+        name: { path: "name", name: "Комментарий" },
+        edit: {
+            component: (transaction) => (
+                <Link to={`/transactions/${transaction._id}`}>
+                    <button className="btn btn-warning">
+                        <i className="bi bi-pencil"></i>
+                    </button>
+                </Link>
+            )
+        },
         delete: {
             component: (transaction) => (
                 <button
                     onClick={() => onDelete(transaction._id)}
                     className="btn btn-danger"
                 >
-                    X
+                    <i className="bi bi-x-circle"></i>
                 </button>
             )
         }

@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from "react";
-import API from "../api";
+import API from "../../api";
 import _ from "lodash";
-import OperationsHistory from "./tasks/operationsHistory";
-import TransactionStatus from "./transactionStatus";
-import Pagination from "./pagination";
-import { pagination } from "../utils/pagination";
-import GroupList from "./groupList";
-import TransactionsTable from "./transactionsTable";
-import Loader from "./common/loader";
+import OperationsHistory from "../../components/tasks/operationsHistory";
+import TransactionStatus from "../../components/ui/transactionStatus";
+import Pagination from "../../components/common/pagination";
+import { pagination } from "../../utils/pagination";
+import GroupList from "../../components/common/groupList";
+import TransactionsTable from "../../components/ui/transactionsTable";
+import Loader from "../../components/common/loader";
 
-const Transactions = () => {
+const TransactionsListPage = () => {
     const userId = "111";
     const [transactions, setTransactions] = useState();
     const [categories, setCategories] = useState();
@@ -156,4 +156,4 @@ const Transactions = () => {
     return <Loader />;
 };
 
-export default Transactions;
+export default TransactionsListPage;

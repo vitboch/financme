@@ -26,7 +26,20 @@ const OperationsHistory = () => {
                     id="flexCheckDefault"
                 />
                 <label className="form-check-label" htmlFor="flexCheckDefault">
-                    Возможность открыть страницу добавления/изменения операции
+                    Возможность открыть страницу добавления операции
+                </label>
+            </div>
+
+            <div className="form-check">
+                <input
+                    className="form-check-input"
+                    type="checkbox"
+                    value=""
+                    id="flexCheckDefault"
+                    defaultChecked
+                />
+                <label className="form-check-label" htmlFor="flexCheckDefault">
+                    Возможность открыть страницу изменения операции
                 </label>
             </div>
 
@@ -51,7 +64,31 @@ const OperationsHistory = () => {
                     id="flexCheckDefault"
                 />
                 <label className="form-check-label" htmlFor="flexCheckDefault">
-                    Фильтрация по датам, по счетам, по категориям и т.д.
+                    Фильтрация по датам и т.д.
+                </label>
+            </div>
+
+            <div className="form-check">
+                <input
+                    className="form-check-input"
+                    type="checkbox"
+                    value=""
+                    id="flexCheckDefault"
+                />
+                <label className="form-check-label" htmlFor="flexCheckDefault">
+                    Фильтрация по счетам
+                </label>
+            </div>
+
+            <div className="form-check">
+                <input
+                    className="form-check-input"
+                    type="checkbox"
+                    value=""
+                    id="flexCheckDefault"
+                />
+                <label className="form-check-label" htmlFor="flexCheckDefault">
+                    Фильтрация по категориям
                 </label>
             </div>
 
