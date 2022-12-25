@@ -223,9 +223,20 @@ const remove = (id) =>
             resolve(id);
         }, 200);
     });
+const getById = (id) =>
+    new Promise((resolve) => {
+        window.setTimeout(function () {
+            resolve(
+                JSON.parse(localStorage.getItem("transactions")).find(
+                    (transaction) => transaction._id === id
+                )
+            );
+        }, 1000);
+    });
 export default {
     fetchAll,
     fetchTransactionsForUser,
     add,
-    remove
+    remove,
+    getById
 };
